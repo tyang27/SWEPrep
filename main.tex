@@ -1,5 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage{verbatim}
+\usepackage[margin=0.5in]{geometry}
 
 \title{Software Interview Prep}
 \author{tyang27}
@@ -11,12 +13,48 @@
 
 \section{Topics}
 \subsection{Sorting and searching}
+\subsubsection{Insertion sort}
+Preserves loop invariant by inserting next element right to cursor into sorted array.
 \begin{itemize}
-    \item Insertion sort
-    \item Selection sort
-    \item Bubble sort
-    \item Merge sort
-    \item Quick sort
+    \item Adaptive - good for mostly sorted data sets.
+    \item Stable - preserves order.
+    \item In-place - no auxillary data structures.
+    \item Online - does not need whole input to start sorting.
+\end{itemize}
+\begin{verbatim}
+    for (int cursor=1; cursor < A.length; cursor++) {
+        int cursorVal = A[cursor];
+        int left = cursor - 1;
+        while (left >= 0 && A[left] > cursorVal) {
+            A[left+1] = A[left];
+            left--;
+        }
+        A[left+1] = cursorVal;
+    }
+\end{verbatim}
+
+\subsubsection{Selection sort}
+Preserves loop invariant by putting the next largest element right of cursor into sorted array.
+\begin{verbatim}
+    for (int cursor=0; cursor < A.length-1; cursor++) {
+        int minIndex = cursor;
+        for (int right = cursor+1; right < A.length; right++) {
+            if (compare(A[minIndex], A[right])
+                minIndex = right;
+        }
+        if (minIndex != cursor)
+            swap(A, cursor, minIndex);
+    }
+\end{verbatim}
+
+
+\subsubsection{Bubble sort}
+\subsubsection{Merge sort}
+
+
+\subsubsection{Quick sort}
+
+\begin{itemize}
     \item Count sort
     \item Radix sort
     \item Search
