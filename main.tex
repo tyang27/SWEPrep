@@ -2,6 +2,19 @@
 \usepackage[utf8]{inputenc}
 \usepackage{verbatim}
 \usepackage[margin=0.5in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{listings}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+    tabsize=2,
+    showstringspaces=false,
+    keywordstyle=\color{blue},
+    basicstyle=\ttfamily
+}
+
 
 \title{Software Interview Prep}
 \author{tyang27}
@@ -13,15 +26,17 @@
 
 \section{Topics}
 \subsection{Sorting and searching}
-\subsubsection{Insertion sort}
+\subsubsection{Insertion sort - $O(n^2)$}
 Preserves loop invariant by inserting next element right to cursor into sorted array.
 \begin{itemize}
     \item Adaptive - good for mostly sorted data sets.
     \item Stable - preserves order.
     \item In-place - no auxillary data structures.
     \item Online - does not need whole input to start sorting.
+    \item Insertion finding step can be sped up with binary search.
 \end{itemize}
-\begin{verbatim}
+\begin{lstlisting}[language=java]
+public void sort(int[] A) {
     for (int cursor=1; cursor < A.length; cursor++) {
         int cursorVal = A[cursor];
         int left = cursor - 1;
@@ -31,11 +46,13 @@ Preserves loop invariant by inserting next element right to cursor into sorted a
         }
         A[left+1] = cursorVal;
     }
-\end{verbatim}
+}
+\end{lstlisting}
 
-\subsubsection{Selection sort}
+\subsubsection{Selection sort - $O(n^2)$}
 Preserves loop invariant by putting the next largest element right of cursor into sorted array.
-\begin{verbatim}
+\begin{lstlisting}[language=java]
+public void sort(int[] A) {
     for (int cursor=0; cursor < A.length-1; cursor++) {
         int minIndex = cursor;
         for (int right = cursor+1; right < A.length; right++) {
@@ -45,34 +62,179 @@ Preserves loop invariant by putting the next largest element right of cursor int
         if (minIndex != cursor)
             swap(A, cursor, minIndex);
     }
-\end{verbatim}
+}
+\end{lstlisting}
 
 
 \subsubsection{Bubble sort}
-\subsubsection{Merge sort}
+Not very good or interesting...
 
+\subsubsection{Merge sort}
+\begin{lstlisting}[language=java]
+public static void sort(int[] A) {
+    if (A.length <= 1) return;
+    
+    int mid = A.length/2;
+    int[] left = new int[mid];
+    int[] right = new int[A.length-mid];
+    
+    System.arraycopy(A, 0, left, 0, mid);
+    System.arraycopy(A, mid, right, 0, A.length-mid);
+    sort(left);
+    sort(right);
+    merge(A, left, right);
+}
+public static void merge(int[] A, int[] left, int[] right) {
+    int l, r, i;
+    i = l = r = 0;
+    while (l < left.length || r < right.length) {
+        if (l < left.length && r < r.length)
+            A[i++] = compare(left[l], right[r]) ? right[r++] : left[l++];
+        else if (l < left.length)
+            A[i++] = left[l++];
+        else if (r < right.length)
+            A[i++] = right[r++];
+    }    
+}
+\end{lstlisting}
 
 \subsubsection{Quick sort}
+TODO
+\subsubsection{Count sort}
+\begin{lstlisting}[language=java]
+public static void sort(int[] A) {
+    if (A.length == 0) return;
+    int min = Arrays.stream(A).min().getAsInt();
+    int max = Arrays.stream(A).max().getAsInt();
+    int[] counts = new int[max-min+1];
+    for (int i : A) counts[i-min]++;
+    
+    int j = 0;
+    for (int i=0; i < A.length; i++) {
+        while (counts[j] == 0) j++;
+        A[i] = min + j;
+        counts[j]--;
+    }
+}
+\end{lstlisting}
 
-\begin{itemize}
-    \item Count sort
-    \item Radix sort
-    \item Search
-\end{itemize}
+\subsubsection{Radix sort}
+TODO
+\subsubsection{Binary search}
+-1 if not found:
+\begin{lstlisting}[language=java]
+public static int search(int[] A, int key, int low, int high) {
+    if (high < low) return -1;
+    int mid = low + (high-low)/2;
+    if (A[mid] == key) return mid;
+    else if (A[mid] < key) return search(A, key, low, mid-1);
+    else return search(A, key, mid+1, high);
+}
+\end{lstlisting}
+Closest: TODO
+
+\subsubsection{Median/order stats}
+TODO
+
+\subsubsection{Permutations}
+All permutations: TODO
+Next permutation: TODO
 
 \subsection{Hash Tables}
+\subsubsection{Dynamic - $O(1)$ average, $O(n)$ worst case}
 \begin{itemize}
-    \item Using only arrays
+    \item Capacity - initial size of primary array.
+    \item Load factor - what percentage fill to resize.
+    \item Separate chaining - use list for collision.
+    \item Linear, quadratic chaining - use $+k$, $_k^2$.
+    \item Cuckoo - kick out element.
+    \item Bloom filter - use multiple hash to create fingerprint for keys, faster retrieval if not exist.
 \end{itemize}
+\begin{lstlisting}[language=java]
+    class Dictionary {
+        List<List<Pair>> dictionary;
+        int capacity;
+        public int hash(int key) { return Math.abs(key) % capacity; }
+        public Dictionary(int capacity) {
+            this.capacity = capacity;
+            this.dictionary = new ArrayList<>(capacity);
+            for (int i=0; i < capacity; i++) dictionary.add(new ArrayList<Pair>());
+        }
+        public void put(int key, String value) {
+            for (Pair p : dictionary.get(hash(key))) {
+                if (p.key == key) {
+                    p.value = value;
+                    return;
+                }
+            }
+            dictionary.get(hash(key)).add(new Pair(key, value));
+        }
+        public String get(int key) {
+            for (Pair p : dictionary.get(hash(key))) {
+                if (p.key == key)
+                    return p.value;
+            }
+            return null;
+        }
+    }
+\end{lstlisting}
+
+\subsubsection{Static}
+If you know the keys ahead of time, use primary hash function to find out where they go to, then build secondary perfect hash functions. This will be $O(1)$ worst case and $O(n)$ space.
 
 \subsection{Coding}
+\subsubsection{Java}
 \begin{itemize}
-    \item Java
-    \item APIs
-    \item OOP
-    \item Testing
-    \item Corner and edge cases
+    \item Lambdas:
+    \begin{lstlisting}[language=java]
+    (T1 t1, ...) -> { t1...};
+    \end{lstlisting}
+    \item Streams:
+    \begin{lstlisting}[language=java]
+    collection.stream()
+        .map(lambda) //1:1
+        .flatMap(lambda) //1:*
+        .sorted()
+        .distinct()
+        .filter(lambda).
+        .concat(stream)
+        .limit(int)
+        .toArray()/.collect(Collectors.toList());
+    \end{lstlisting}
 \end{itemize}
+
+\subsubsection{REST APIs}
+\begin{itemize}
+    \item No saved state e.g. with HTTP
+    \item Everything is in the query which is good for scalability and indepenent growth of client server
+    \item GET, POST, PUT, DELETE
+\end{itemize}
+
+\subsubsection{OOP}
+https://www.oodesign.com/
+\begin{itemize}
+    \item Singleton - only one instance created, global access point.
+\begin{lstlisting}[language=java]
+class Singleton {
+    private static Singleton instance = new Singleton();
+    private Singleton() {}
+    public static Singleton getInstance() { return instance; }
+}
+\end{lstlisting}
+    \item Factory
+    \item Builder
+    \item Prototype
+    \item Pool
+    \item Chain of responsibility - e.g. handlers
+    \item Command
+    \item Mediator
+    \item Strategy
+    \item Template
+    \item Visitor
+\end{itemize}
+
+
+\subsubsection{Testing and edge cases}
 
 \subsection{Algorithms}
 \begin{itemize}
@@ -88,24 +250,80 @@ Preserves loop invariant by putting the next largest element right of cursor int
 \end{itemize}
 
 \subsection{Data Structures}
+\subsubsection{Collections}
 \begin{itemize}
-    \item Arrays
-    \item Linked lists
-    \item Stacks
-    \item Queues
-    \item Hash set
-    \item Hash map
-    \item Trees
-    \item Binary tree
-    \item Heap
-    \item Graph
+    \item Collections.size(); [].length, String.length();
+    \item Collections.binarySearch(List l, K k);
+    \item Collections.fill(List l, V v);
+    \item Collections.max(Collection c);
+    \item Collections.min(Collection c);
+    \item Collections.replaceAll(List l, K old, K new);
+    \item Collections.reverse(List l);
+    \item Collections.shuffle(List l);
+    \item Collections.sort(List l);
+    \item Collections.swap(List l, int i, int j);
 \end{itemize}
+\subsubsection{Strings}
+``initialization"
+\begin{itemize}
+    \item Integer.valueOf(String s);
+    \item String.valueOf(K k);
+    \item s.charAt(int i);
+    \item s.substring(int start, int end); s.substring(int start);
+    \item s.replace(char src, char dst);
+    \item s.indexOf(char c);
+    \item s.matches(String regex);
+    \item s.split(String regex);
+    \item s.startsWith(String pre); s.endsWith(String suf);
+\end{itemize}
+\subsubsection{Arrays/linked lists}
+new ArrayList(); or new LinkedList(); or new T[]; or Arrays.asList([]); or Arrays.asList(t1, ...)
+\begin{itemize}
+    \item Arrays.toString(T[]);
+    \item System.arrayCopy(T[] src, int srcStart, T[] dst, int dstStart, int length);
+\end{itemize}
+\subsubsection{Stacks/queues/priority queue/heap}
+new Deque(); or new PriorityQueue();
+X can be First or Last.
+\begin{itemize}
+    \item dq.offerX(T t) (push)
+    \item dq.peekX() (get)
+    \item dq.pollX() (pop)
+    \item dq.size()
+\end{itemize}
+\subsubsection{HashSet/HashMap}
+new HashMap(); or new LinkedHashMap();
+\begin{itemize}
+    \item map.containsKey(K k);
+    \item map.containsValue(V v);
+    \item Map.Entry entry : map.entrySet();
+    \item map.keySet(); and map.values();
+    \item map.get(K k); and map.put(K k, V v);
+    \item map.remove(K k);
+\end{itemize}
+new TreeMap(); (A red black tree, so longer get, but has ordered keys)
+\begin{itemize}
+    \item same as above
+    \item ceilingEntry(K k); or floorEntry(K k); (includes equal to)
+    \item higherEntry(K k); or lowerEntry(K k); (doesn't include equal to)
+    \item headMap(K k, B b); or tailMap(K k, B b); or subMap(K k1, B b1, K k2, B b2); (B for inclusivity)
+\end{itemize}
+TreeMap
+LinkedHashMap
+HashSet
+TreeSet
+\subsubsection{Trees/Binary tree/Graphs}
+See below
+\subsubsection{Disjoint set}
 
 \subsection{Mathematics}
+\subsubsection{Counting}
 \begin{itemize}
-    \item Counting
-    \item Probability
+    \item Ordered list without replacement - $n!/(n-k)!$
+    \item Ordered list with replacement - $n^k$
+    \item Subset without replacement - $\binom{n}{k} = n!/(k!(n-k)!)$
 \end{itemize}
+\subsubsection{Probability}
 
 \subsection{Trees and Graphs}
 \begin{itemize}
@@ -120,6 +338,11 @@ Preserves loop invariant by putting the next largest element right of cursor int
     \item DFS
     \item Preorder, inorder, postorder
 \end{itemize}
+Djikstra
+Bellman Ford
+Strongly connected components
+Topological sort
+MST
 
 \subsection{Recursion}
 
