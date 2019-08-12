@@ -27,7 +27,7 @@
 \section{Topics}
 \subsection{Sorting and searching}
 \subsubsection{Insertion sort - $O(n^2)$}
-Preserves loop invariant by inserting next element right to cursor into sorted array.
+Preserves loop invariant by inserting next element right of cursor into invariant.
 \begin{itemize}
     \item Adaptive - good for mostly sorted data sets.
     \item Stable - preserves order.
@@ -50,7 +50,7 @@ public void sort(int[] A) {
 \end{lstlisting}
 
 \subsubsection{Selection sort - $O(n^2)$}
-Preserves loop invariant by putting the next largest element right of cursor into sorted array.
+Preserves loop invariant by putting the next largest element right of cursor as next element of invariant.g
 \begin{lstlisting}[language=java]
 public void sort(int[] A) {
     for (int cursor=0; cursor < A.length-1; cursor++) {
@@ -121,20 +121,30 @@ public static void sort(int[] A) {
 \subsubsection{Radix sort}
 TODO
 \subsubsection{Binary search}
--1 if not found:
+-1 if not found, or ceiling (highest number less than), or floor (lowest number greater than):
 \begin{lstlisting}[language=java]
 public static int search(int[] A, int key, int low, int high) {
-    if (high < low) return -1;
+    if (high < low) {
+        // return low; // ceiling
+        // return high; // floor
+        return -1;
+    }
     int mid = low + (high-low)/2;
     if (A[mid] == key) return mid;
-    else if (A[mid] < key) return search(A, key, low, mid-1);
+    else if (A[mid] > key) return search(A, key, low, mid-1);
     else return search(A, key, mid+1, high);
 }
 \end{lstlisting}
-Closest: TODO
 
 \subsubsection{Median/order stats}
-TODO
+Median of medians - $O(n)$ worst and best case
+\begin{itemize}
+    \item Split data into groups of 5, partition by medians of each, recurse on either the higher or lower group.
+\end{itemize}
+Quick select - $O(n^2)$ worst case but $O(n)$ average
+\begin{itemize}
+    \item Partition, then swap based on partition, recurse based on the size of partitions.
+\end{itemize}
 
 \subsubsection{Permutations}
 All permutations: TODO
@@ -308,10 +318,19 @@ new TreeMap(); (A red black tree, so longer get, but has ordered keys)
     \item higherEntry(K k); or lowerEntry(K k); (doesn't include equal to)
     \item headMap(K k, B b); or tailMap(K k, B b); or subMap(K k1, B b1, K k2, B b2); (B for inclusivity)
 \end{itemize}
-TreeMap
-LinkedHashMap
-HashSet
-TreeSet
+new HashSet();
+\begin{itemize}
+    \item add(K k);
+    \item contains(K k);
+    \item remove(K k);
+    \item toArray();
+\end{itemize}
+new TreeSet();
+\begin{itemize}
+    \item similar to TreeMap
+    \item first(); last(); floor(); ceiling(); higher(); lower();
+    \item headSet(K k, B b); subSet(K k1, B b1, K k2, B b2); tailSet(K k, B b);
+\end{itemize}
 \subsubsection{Trees/Binary tree/Graphs}
 See below
 \subsubsection{Disjoint set}
@@ -348,23 +367,87 @@ MST
 
 \subsection{Operating Systems}
 \begin{itemize}
-    \item Processes
-    \item Threads
-    \item Concurrency issues
-    \item Locks
-    \item Mutexes
-    \item Semaphores
-    \item Monitors
-    \item Deadlock
-    \item Livelock
-    \item Context switching
+    \item Processes - separate address space, more costly to create
+    \item Threads - share address space and resources in a process
+    \item Concurrency issues - safety refers to never being in deadlock, liveness refers to stop waiting after a certain time.
+    \item Locks - limits to one thread in a process - lock.acquire(), lock.wait(), lock.release()
+    \item Mutexes - limits to one thread in any process - 
+    \item Semaphores - limits number of processes - semaphore(n), s.up(), s.down()
+    \item Monitors - avoid busy waiting by acquiring lock and then releasing it, and getting put on the semaphore queue. Then, when a process is done, it can either signal one or all that the resource is free.
+    \item Deadlock - processes waiting for each other. Two people playing tug of war and neither wants to let go. Think of true/false as the lock acquire/release.
+    \begin{lstlisting}
+/* PROCESS 0 */
+a = true; 
+while (b) {} // gets stuck here
+a = false; 
+
+/* PROCESS 1 */
+b = true;
+while (a) {} // gets stuck here
+b = false;
+    \end{lstlisting}
+    \item Livelock - processes keep responding to each other and neither gets anything done. Two people who keep telling each other ``you first, I'll wait".
+\begin{lstlisting}
+/* PROCESS 0 */
+a = true; 
+while (b) { // gets stuck in this loop
+    a = false;
+    // delay
+    a = true;
+}
+a = false; 
+
+/* PROCESS 1 */
+b = true;
+while (a) { // gets stuck in this loop
+    b = false;
+    // delay
+    b = true;
+}
+b = false;
+\end{lstlisting}
+    \item Context switching - switching between processes
     \item Scheduling
+    \begin{itemize}
+        \item First come first serve - simple and no starvation, but no preemption, so average wait time is long if a process takes a long time.
+        \item Shortest job first - high throughput, but unknown job times and may starve long jobs.
+        \item Round robin - no starvation, but have to tune quantum length (too long without preemption isn't good, too short makes it inefficient)
+        \item Priority - can be flexible based on resources, but requires a separate algorithm for ties, and may starve low priority.
+        \item Multi-level feedback queue - similar to priority scheduling, but increase or decrease priority (move to different queue) if starving or hogging.
+        \item Round robin - simple, unfair to maringally longer jobs.
+        \item Dominant resource fairness - some tasks might be focused on one resource
+        \item Hadoop does FIFO, fair, and capacity scheduling.
+        \item Mesos resource offers.
+    \end{itemize}
 \end{itemize}
 
 \subsection{System Design}
 \begin{itemize}
     \item Breaking down a problem into subproblems
     \item Engineering tradeoffs
+    \item Time and memory
+    \item CAP theorem - in distributed systems, the tradeoff between:
+    \begin{itemize}
+        \item consistency - most recent data or error
+        \item availability - no errors, but not necessarily more recent data
+        \item partition tolerance - ability to handle data drop. If you cancel the operation, then you are not available but are consistent. On the other hand, if you proceed with the operation, you are available but not consistent.
+    \end{itemize}
+    \item ACID - database principle, more consistent
+    \begin{itemize}
+        \item atomicity - all or nothing
+        \item consistency - only valid data written
+        \item isolation - transactions are independent
+        \item durability - no data lost
+    \end{itemize}
+    \item BASE - database principle, more available
+    \begin{itemize}
+        \item Basically available
+        \item Soft-state
+        \item Eventually consistent
+    \end{itemize}
+    \item DNS for load balancing, CDN caching
+    \item Consistent hashing - servers can go in/out of a system, and then you need to move a bunch of data around because your hash based on the number of servers is incorrect. Consistent hashing fixes this, so if a server goes down, only a small amount of entries will need to be moved.
+    \item CRUD - create, retrieve, update, delete
 \end{itemize}
 
 \subsection{Development Practices and Open-Ended Discussion}
