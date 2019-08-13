@@ -1,11 +1,6 @@
 import java.util.*;
 
 class QuickSelect {
-  public static boolean compare(int a, int b) {
-    // Flip sign if descending.
-    return a > b;
-  }
-
   public static void swap(int[] A, int i, int j) {
     int temp = A[i];
     A[i] = A[j];
