@@ -29,6 +29,7 @@
 \subsubsection{Insertion sort - $O(n^2)$}
 Preserves loop invariant by inserting next element right of cursor into invariant.
 \begin{itemize}
+    \itemsep0em 
     \item Adaptive - good for mostly sorted data sets.
     \item Stable - preserves order of equal items.
     \item In-place - no auxillary data structures.
@@ -210,6 +211,7 @@ Next permutation: TODO
 \subsection{Hash Tables}
 \subsubsection{Dynamic - $O(1)$ average, $O(n)$ worst case}
 \begin{itemize}
+    \itemsep0em
     \item Capacity - initial size of primary array.
     \item Load factor - what percentage fill to resize.
     \item Separate chaining - use list for collision.
@@ -253,6 +255,7 @@ If you know the keys ahead of time, use primary hash function to find out where 
 \subsection{Coding}
 \subsubsection{Java}
 \begin{itemize}
+    \itemsep0em
     \item Lambdas:
     \begin{lstlisting}[language=java]
     (T1 t1, ...) -> { t1...};
@@ -274,6 +277,7 @@ If you know the keys ahead of time, use primary hash function to find out where 
 
 \subsubsection{REST APIs}
 \begin{itemize}
+    \itemsep0em
     \item No saved state e.g. with HTTP
     \item Everything is in the query which is good for scalability and indepenent growth of client server
     \item GET, POST, PUT, DELETE
@@ -281,6 +285,7 @@ If you know the keys ahead of time, use primary hash function to find out where 
 
 \subsubsection{OOP}
 \begin{itemize}
+    \itemsep0em
     \item Extending a base class or abstract class, or implementing an interface.
     \item Encapsulation\\
     \begin{tabular}{|c|c|c|c|c|c|}
@@ -417,6 +422,7 @@ class Me implements Visitor {/*...*/}
 
 \subsection{Algorithms}
 \begin{itemize}
+    \itemsep0em
     \item Bottom up vs top down
     \item Analyze complexity (Master's, induction), how to improve
     \item Divide and conquer
@@ -428,6 +434,7 @@ class Me implements Visitor {/*...*/}
 \subsection{Data Structures}
 \subsubsection{Collections}
 \begin{itemize}
+    \itemsep0em
     \item c.size(); [].length, String.length();
     \item Collections.binarySearch(List l, K k);
     \item Collections.fill(List l, V v);
@@ -439,6 +446,7 @@ class Me implements Visitor {/*...*/}
 \subsubsection{Strings}
 ``initialization"
 \begin{itemize}
+    \itemsep0em
     \item Integer.valueOf(String s);
     \item String.valueOf(K k);
     \item s.charAt(int i);
@@ -452,6 +460,7 @@ class Me implements Visitor {/*...*/}
 \subsubsection{Arrays/linked lists}
 new ArrayList(); or new LinkedList(); or new T[]; or {}; or Arrays.asList(,,); or Arrays.asList(t1, ...)
 \begin{itemize}
+    \itemsep0em
     \item Arrays.toString(T[]);
     \item System.arrayCopy(T[] src, int srcStart, T[] dst, int dstStart, int length);
     \item a.get(int i); a.set(int i, T t);
@@ -462,6 +471,7 @@ new ArrayList(); or new LinkedList(); or new T[]; or {}; or Arrays.asList(,,); o
 new Deque(); or new PriorityQueue();
 X can be First or Last.
 \begin{itemize}
+    \itemsep0em
     \item dq.offerX(T t) (push)
     \item dq.peekX() (get)
     \item dq.pollX() (pop)
@@ -469,6 +479,7 @@ X can be First or Last.
 \subsubsection{HashSet/HashMap}
 new HashMap(); or new LinkedHashMap();
 \begin{itemize}
+    \itemsep0em
     \item m.containsKey(K k); m.containsValue(V v);
     \item Map.Entry entry : m.entrySet();
     \item m.keySet(); and m.values();
@@ -477,6 +488,7 @@ new HashMap(); or new LinkedHashMap();
 \end{itemize}
 new HashSet();
 \begin{itemize}
+    \itemsep0em
     \item s.add(K k); s.remove(K k);
     \item s.contains(K k);
     \item s.toArray(); new ArrayList(s);
@@ -486,6 +498,7 @@ Red black tree, longer get, but ordered keys. Same operations as above, plus som
 new TreeMap(); // Replace E with Entry, D with Map\\
 new TreeSet(); // Remove E, D with Set
 \begin{itemize}
+    \itemsep0em
     \item m.firstE/lastE(K k);
     \item m.ceilingE/floorE(K k); // includes equal to
     \item m.higherE/lowerE(K k); // doesn't include equal to
@@ -530,6 +543,7 @@ class UnionFind {
 \subsection{Mathematics}
 \subsubsection{Counting}
 \begin{itemize}
+    \itemsep0em
     \item Ordered list without replacement - $\frac{n!}{(n-k)!}$
     \item Ordered list with replacement - $n^k$
     \item Subset without replacement - $\binom{n}{k} = \frac{n!}{k!(n-k)!}$
@@ -637,21 +651,25 @@ void dfs(Vertex v) {
 Conceptually, two DFS modified to highlight edges that find decreasing last visit time between the nodes, one on the graph and one on the transpose; if highlighted in both runs, SCC. Implementation: DFS with tail call push onto stack (like topological sort, ordering by decreasing last visit time). Reverse directions of edges on graph. While stack is not empty, pop nodes and DFS on unvisited ones to get a single SCC. 
 \subsection{Minimum Spanning Tree}
 \begin{itemize}
+    \itemsep0em
     \item Kruskal's: Store edges weights in a minheap (like sorting the edges). Create disjoint set for nodes. For each minimum edge, if the two vertices are in different trees, union the nodes and add the edge.
     \item Prim's: Create disjoint set for nodes. While there are isolated nodes, iterate through set to get the minimum edge to something we have not visited yet.
 \end{itemize}
 \subsection{Paths}
 \begin{itemize}
+    \itemsep0em
     \item Djikstra
     \item Bellman Ford/Floyd Warshall
     \item Matrix multiplication
 \end{itemize}
-
+TODO
 
 \subsection{Recursion, Divide and Conquer}
+TODO
 
 \subsection{Operating Systems}
 \begin{itemize}
+    \itemsep0em
     \item Processes - separate address space, more costly to create
     \item Threads - share address space and resources in a process
     \item Concurrency issues - safety refers to never being in deadlock, liveness refers to stop waiting after a certain time.
@@ -707,6 +725,7 @@ b = false;
 
 \subsection{System Design, Testing and edge cases}
 \begin{itemize}
+    \itemsep0em
     \item Breaking down a problem into subproblems
     \item Clarify types of valid/invalid input, input size
     \item Engineering tradeoffs, e.g. time and memory, complexity of solution might be harder to modify
@@ -736,6 +755,7 @@ b = false;
 
 \subsection{Development Practices and Open-Ended Discussion}
 \begin{itemize}
+    \itemsep0em
     \item Validating designs
     \item Testing whiteboard code
     \item Preventing bugs
