@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage{verbatim}
 \usepackage[margin=0.5in]{geometry}
@@ -22,7 +22,7 @@
 
 \begin{document}
 
-\maketitle
+%\maketitle
 
 \section{Topics}
 \subsection{Sorting and searching}
@@ -69,7 +69,7 @@ public void sort(int[] A) {
 \subsubsection{Bubble sort}
 Not very good or interesting...
 
-\subsubsection{Merge sort - O(n\log n)}
+\subsubsection{Merge sort - $O(n\log n)$}
 Partition into smaller and smaller arrays, then merge to sort.
 \begin{lstlisting}[language=java]
 public static void sort(int[] A) {
@@ -139,7 +139,28 @@ public static void sort(int[] A) {
 \end{lstlisting}
 
 \subsubsection{Radix sort - $O(nk/d)$}
-TODO
+Radix sort with strings. I didn't realize it would sort by length and then alaphabetical, so it's kind of dumb.
+\begin{lstlisting}[language=java]
+public static void mySort(String[] S) {                                  
+    for (int i = 0; i < MAX_LEN; i++) {                                    
+        // Initialize buckets                                                
+        List<List<String>> B = new ArrayList<>(BUCKETS);                  
+        for (int b = 0; b < BUCKETS; b++)
+            B.add(new ArrayList<>());                                       
+        // Sort into buckets                                       
+        for (String s : S)                                           
+            B.get(mapping(s, MAX_LEN - 1- i)).add(s);
+        // Unpack
+        for (int b = 0, unpacker = 0; b < BUCKETS; k++)                             
+            for (String s : B.get(b))
+                S[unpacker++] = s;                           
+    }
+}
+public static int mapping(String s, int i) {                             
+    return (int) s.charAt(i) - (int) '`';                                  
+}
+\end{lstlisting}
+
 \subsubsection{Binary search - $O(\log n)$}
 -1 if not found, or ceiling (highest number less than), or floor (lowest number greater than):
 \begin{lstlisting}[language=java]
@@ -171,7 +192,21 @@ pubic static int search(int[] A, int k, int low, int high) {
 \end{lstlisting}
 
 \subsubsection{Permutations}
-All permutations: TODO
+\textbf{All - O(n!)}\\
+Head recursion to the end so the last few numbers will be a permutation. Tail recursion to reset it to the last state.
+\begin{lstlisting}[language=java]
+public static void permute(int[] A, int low, int high) {
+    if (low == high) {
+        permutations.add(Arrays.copyOf(A, A.length));
+        return;
+    }
+    for (int curr=low; curr <= high; curr++) {
+        swap(A, low, curr);
+        permute(A, low+1, high);
+        swap(A, curr, low);
+    }
+}
+\end{lstlisting}
 Next permutation: TODO
 
 \subsection{Hash Tables}
@@ -214,7 +249,7 @@ Next permutation: TODO
 \end{lstlisting}
 
 \subsubsection{Static}
-If you know the keys ahead of time, use primary hash function to find out where they go to, then build secondary perfect hash functions. This will be $O(1)$ worst case and $O(n)$ space.
+If you know the keys ahead of time, use primary hash function to find out where they go to, then build secondary perfect hash functions. This will be $O(1)$ worst case and $O(n)$ space, since you know ahead of time how large to make your secondary arrays.
 
 \subsection{Coding}
 \subsubsection{Java}
@@ -254,17 +289,116 @@ class Singleton {
     private Singleton() {}
     public static Singleton getInstance() { return instance; }
 }
+// Usage: Singleton.getInstance();
 \end{lstlisting}
-    \item Factory
-    \item Builder
+    \item Factory - produce items that implement the same interface.
+\begin{lstlisting}[language=java]
+interface FactoryItem { }
+class Item1 implements FactoryItem { }
+class Factory {
+    static FactoryItem buildItem(String type) {
+        if (type.equalsIgnoreCase("Item1")) { return new Item1(); }
+        return null;
+    }
+}
+// Usage: FactoryItem item = Factory.buildItem(Item1");
+\end{lstlisting}
+    \item Builder - method chaining makes it easier to set multiple fields.
+\begin{lstlisting}[language=java]
+public class Item {
+    private final int field1;
+    private Item() {}
+    Item(Builder builder) { field1 = builder.field1; }
+    static class Builder {
+        private int field1;
+        private Builder();
+        static Builder newInstance() { return new Builder(); }
+        Builder setField1(int field1) {
+            this.field1 = field1;
+            return this;
+        }
+        Item build() { return new Item(this); }
+    }
+}
+// Usage: Item.Builder.newInstance().setField1(1)./*...*/.build();
+\end{lstlisting}
+
+\begin{comment}
     \item Prototype
-    \item Pool
-    \item Chain of responsibility - e.g. handlers
-    \item Command
-    \item Mediator
-    \item Strategy
-    \item Template
+\begin{lstlisting}[language=java]
+abstract class Item implements Cloneable {
+    protected String itemName;
+    abstract void addItem();
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupporteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
+class Item1 extends Item {/*...*/}
+class ItemStore {
+    Map<String, Item> protoMap = new HashMap<>();
+    static { protoMap.put("Item1", new Item1()); }
+    public static Prototype getItem(String item) {
+        return (Item) protoMap.get(item).clone();
+    }
+}
+\end{lstlisting}
+\end{comment}
+    \item Adapter
+\begin{lstlisting}[language=java]
+interface Male { abstract void beingDumb(); }
+interface Female { abstract void beingSmart(); }
+class male1 implements Male {}
+class female1 implements Female {}
+class Adapter {
+    Male m;
+    Adapter(Male male) { this.m = m; }
+    public void beingSmart() { m.beingDumb(); }
+}
+// Usage: Adapter(new Male()).beingSmart(); --> new Female().beingSmart();
+\end{lstlisting}
+    \item State - uses polymorphism to change the behavior of the object.
+\begin{lstlisting}[language=java]
+interface State { public void fx(Context ctxt); }
+class State1 implements State {/*...*/}
+class Context {
+    private State currentState;
+    Context() { currentState = new State1(); }
+    void setState(State state) { currentState = state; }
+    void fx() { currentState.fx(this); }
+}
+// Usage: Context c = new Context(); c.setState(new State2()); c.fx();
+\end{lstlisting}
+    %\item Strategy
+    \item Observer
+\begin{lstlisting}[language=java]
+class Display {
+    private int field1;
+    void update(int field1) { field1 = field1; display(); }
+    void display() {/*...*/}
+}
+class Data {
+    Display display;
+    private int field1;
+    Data(Display display) { display = display; }
+    void updateField1() {/*...*/}
+    void dataChanged() { display.update(field1); }
+}
+\end{lstlisting}
     \item Visitor
+\begin{lstlisting}[language=java]
+interface Visitor { void visit(Boyfriend bf); void visit(Bestfriend f); }
+interface Friend { void sleepover(Visitor visitor); }
+class Boyfriend implements Friend {/*...*/}
+class Bestfriend implements Friend {/*...*/}
+class Me implements Visitor {/*...*/}
+// Usage: Make an collection of Friends, and Me
+//  for (Friend f : friends) friend.sleepover(me);
+\end{lstlisting}
 \end{itemize}
 
 
@@ -303,7 +437,8 @@ class Singleton {
     \item Integer.valueOf(String s);
     \item String.valueOf(K k);
     \item s.charAt(int i);
-    \item s.substring(int start, int end); s.substring(int start);
+    \item s.substring(int start, int end);
+    \item s.substring(int start);
     \item s.replace(char src, char dst);
     \item s.indexOf(char c);
     \item s.matches(String regex);
@@ -311,7 +446,7 @@ class Singleton {
     \item s.startsWith(String pre); s.endsWith(String suf);
 \end{itemize}
 \subsubsection{Arrays/linked lists}
-new ArrayList(); or new LinkedList(); or new T[]; or Arrays.asList([]); or Arrays.asList(t1, ...)
+new ArrayList(); or new LinkedList(); or new T[]; or {}; or Arrays.asList(,,); or Arrays.asList(t1, ...)
 \begin{itemize}
     \item Arrays.toString(T[]);
     \item System.arrayCopy(T[] src, int srcStart, T[] dst, int dstStart, int length);
@@ -404,12 +539,67 @@ class UnionFind {
 \subsection{Trees and Graphs}
 \begin{itemize}
     \item Binary tree
-    \item N-ary tree
+\begin{lstlisting}[language=java]
+class Node {
+    int val;
+    Node left, right;
+    BinaryNode(int val) { this.val = val; }
+    static void traverse(Node root) {
+        //Preorder
+        if (root.left != null) traverse(root.left);
+        // Inorder
+        if (root.right != null) traverse(root.right);
+        // Postorder
+    }
+}
+\end{lstlisting}
+    \item N-ary tree - Use array instead of left and right from above, or use an adjacency list graph.
     \item Trie tree
     \item Balanced BST
-    \item Graph using objects
+    \item Graph using objects - annoying, not that interesting.
     \item Graph using adjacency list
-    \item Graph using adjacency matrix
+\begin{lstlisting}[language=java]
+class Vertex {
+    String key, value;
+    Vertex(String key, String value) { this.key = key; this.value = value; }
+    @Override
+    public boolean equals(Object o) { return key.equals(((Vertex) o).key); }
+}
+class Graph {
+    Map<Vertex, List<Vertex>> g;
+    Graph() { g = new HashMap<Vertex, List<Vertex>>(); }
+    Vertex vertex(String key, String val) {
+        Vertex v = new Vertex(key, val);
+        if (g.containsKey(v)) return null;
+        g.put(v, new ArrayList<>());
+        return v;
+    }
+    void edge(Vertex v1, Vertex v2) {
+        if (g.get(v1.contains(v2)) return;
+        g.get(v1).add(v2);
+    }
+    
+}
+\end{lstlisting}
+    \item Graph using matrix
+\begin{lstlisting}[language=java]
+class Graph {
+    List<List<int>> g;
+    List<String> nodes;
+    Graph(List<String> nodes) {
+        this.nodes = nodes;
+        g = new ArrayList(nodes.size());
+        for (int i = 0; i < nodes.size(); i++) {
+            g.add(new ArrayList<List<String>>());
+            for (int j = 0; j < nodes.size(); j++)
+                g.get(i).add(-1);
+        }
+    }
+    void edge(String v1, String v2, int val) {
+        g.get(nodes.indexOf(v1)).set(nodes.indxOf(v2), val);
+    }
+}
+\end{lstlisting}
     \item BFS
     \item DFS
     \item Preorder, inorder, postorder
@@ -432,7 +622,7 @@ MST
     \item Semaphores - limits number of processes - semaphore(n), s.up(), s.down()
     \item Monitors - avoid busy waiting by acquiring lock and then releasing it, and getting put on the semaphore queue. Then, when a process is done, it can either signal one or all that the resource is free.
     \item Deadlock - processes waiting for each other. Two people playing tug of war and neither wants to let go. Think of true/false as the lock acquire/release.
-    \begin{lstlisting}
+    \begin{lstlisting}[language=c]
 /* PROCESS 0 */
 a = true; 
 while (b) {} // gets stuck here
@@ -444,7 +634,7 @@ while (a) {} // gets stuck here
 b = false;
     \end{lstlisting}
     \item Livelock - processes keep responding to each other and neither gets anything done. Two people who keep telling each other ``you first, I'll wait".
-\begin{lstlisting}
+\begin{lstlisting}[language=c]
 /* PROCESS 0 */
 a = true; 
 while (b) { // gets stuck in this loop
