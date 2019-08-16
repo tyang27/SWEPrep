@@ -31,18 +31,45 @@ class GraphMatrix {
 }
 
 class GraphAdjacency {
-  Map<Vertex, List<Vertex>> g;
-  GraphAdjacency() { g = new HashMap<Vertex, List<Vertex>>(); }
+  Map<Vertex, List<Vertex>> g = new HashMap<Vertex, List<Vertex>>();
+  Deque<Vertex> dq = new ArrayDeque<Vertex>();
+
+  GraphAdjacency() {}
+
   public Vertex vertex(String key, String val) {
     Vertex v = new Vertex(key, val);
     if (g.containsKey(v)) return null;
     g.put(v, new ArrayList<Vertex>());
     return v;
   }
+
   public void edge(Vertex v1, Vertex v2) {
     if (g.get(v1).contains(v2)) return;
     g.get(v1).add(v2);
   }
+
+  public void bfs(Vertex v) {
+    // Process node
+    for (Vertex vDest : g.get(v)) {
+      if (!vDest.val.equals("bfs")) {
+        dq.offerLast(vDest);
+        vDest.val = "bfs";
+      }
+    }
+    if (dq.size() != 0)
+      bfs(dq.pollFirst());
+  }
+  List<Vertex> topoSort = new ArrayList<>();
+  public void dfs(Vertex v) {
+    // Process node
+    System.out.println(v.key);
+    g.get(v).stream()
+      .filter(x -> !x.val.equals("dfs"))
+      .map(x -> { x.val = "visited"; return x; })
+      .forEach(x -> dfs(x));
+    topoSort.add(v);
+  }
+
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
@@ -81,13 +108,21 @@ class Graph {
     System.out.println(gmat.toString());
     
     GraphAdjacency gadj = new GraphAdjacency();
-    Vertex joe = gadj.vertex("joe", "1000");
-    Vertex john = gadj.vertex("john", "100");
-    Vertex jim = gadj.vertex("jim", "10");
-    Vertex joline = gadj.vertex("joline", "1");
+    Vertex jt = gadj.vertex("jt_l3", "10000");
+    Vertex joe = gadj.vertex("joe_l2", "1000");
+    Vertex john = gadj.vertex("john_l2", "100");
+    Vertex jim = gadj.vertex("jim_l3", "10");
+    Vertex joline = gadj.vertex("joline_l1", "1");
     gadj.edge(joline, joe);
     gadj.edge(joline, john);
     gadj.edge(john, jim);
+    gadj.edge(joe, jt);
     System.out.println(gadj.toString());
+
+    gadj.bfs(joline);
+    System.out.println();
+    gadj.dfs(joline);
+    System.out.println();
+    gadj.topoSort.stream().forEach(x -> System.out.println(x.key));
   }
 }
