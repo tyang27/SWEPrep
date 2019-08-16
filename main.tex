@@ -30,13 +30,13 @@
 Preserves loop invariant by inserting next element right of cursor into invariant.
 \begin{itemize}
     \item Adaptive - good for mostly sorted data sets.
-    \item Stable - preserves order.
+    \item Stable - preserves order of equal items.
     \item In-place - no auxillary data structures.
     \item Online - does not need whole input to start sorting.
     \item Insertion finding step can be sped up with binary search.
 \end{itemize}
 \begin{lstlisting}[language=java]
-public void sort(int[] A) {
+void sort(int[] A) {
     for (int cursor=1; cursor < A.length; cursor++) {
         int cursorVal = A[cursor];
         int left = cursor - 1;
@@ -52,7 +52,7 @@ public void sort(int[] A) {
 \subsubsection{Selection sort - $O(n^2)$}
 Preserves loop invariant by putting the next largest element right of cursor as next element of invariant.g
 \begin{lstlisting}[language=java]
-public void sort(int[] A) {
+sort(int[] A) {
     for (int cursor=0; cursor < A.length-1; cursor++) {
         int minIndex = cursor;
         for (int right = cursor+1; right < A.length; right++) {
@@ -65,14 +65,15 @@ public void sort(int[] A) {
 }
 \end{lstlisting}
 
-
+\begin{comment}
 \subsubsection{Bubble sort}
 Not very good or interesting...
+\end{comment}
 
 \subsubsection{Merge sort - $O(n\log n)$}
 Partition into smaller and smaller arrays, then merge to sort.
 \begin{lstlisting}[language=java]
-public static void sort(int[] A) {
+void sort(int[] A) {
     if (A.length <= 1) return;
     
     int mid = A.length/2;
@@ -85,9 +86,8 @@ public static void sort(int[] A) {
     sort(right);
     merge(A, left, right);
 }
-public static void merge(int[] A, int[] left, int[] right) {
-    int l, r, i;
-    i = l = r = 0;
+void merge(int[] A, int[] left, int[] right) {
+    int l, r, i; l = r = i = 0;
     while (l < left.length || r < right.length) {
         if (l < left.length && r < r.length)
             A[i++] = compare(left[l], right[r]) ? right[r++] : left[l++];
@@ -102,13 +102,13 @@ public static void merge(int[] A, int[] left, int[] right) {
 \subsubsection{Quick sort - $O(n^2)$ worst case, $O(n\log n)$ average case}
 Partition into higher and lower group, then recursively sort.
 \begin{lstlisting}[language=java]
-public static void sort(int[] A, int low, int high) {
+void sort(int[] A, int low, int high) {
     if (high < low) return;
     int pivot = partition(A, low, high);
     sort(A, low, pivot-1);
     sort(A, pivot+1, high);
 }
-public static void partition(int[] A, int low, int high) {
+void partition(int[] A, int low, int high) {
     int lessThan = low-1;
     int curr = low;
     for (; curr < high; curr++)
@@ -122,7 +122,7 @@ public static void partition(int[] A, int low, int high) {
 \subsubsection{Count sort - $O(n+r)$}
 Count frequencies of each element, then unpack.
 \begin{lstlisting}[language=java]
-public static void sort(int[] A) {
+void sort(int[] A) {
     if (A.length == 0) return;
     int min = Arrays.stream(A).min().getAsInt();
     int max = Arrays.stream(A).max().getAsInt();
@@ -141,7 +141,7 @@ public static void sort(int[] A) {
 \subsubsection{Radix sort - $O(nk/d)$}
 Radix sort with strings. I didn't realize it would sort by length and then alaphabetical, so it's kind of dumb.
 \begin{lstlisting}[language=java]
-public static void mySort(String[] S) {                                  
+void mySort(String[] S) {                                  
     for (int i = 0; i < MAX_LEN; i++) {                                    
         // Initialize buckets                                                
         List<List<String>> B = new ArrayList<>(BUCKETS);                  
@@ -156,15 +156,13 @@ public static void mySort(String[] S) {
                 S[unpacker++] = s;                           
     }
 }
-public static int mapping(String s, int i) {                             
-    return (int) s.charAt(i) - (int) '`';                                  
-}
+int mapping(String s, int i) { return (int) s.charAt(i) - (int) '`'; }
 \end{lstlisting}
 
 \subsubsection{Binary search - $O(\log n)$}
 -1 if not found, or ceiling (highest number less than), or floor (lowest number greater than):
 \begin{lstlisting}[language=java]
-public static int search(int[] A, int key, int low, int high) {
+int search(int[] A, int key, int low, int high) {
     if (high < low) {
         // return low; // ceiling
         // return high; // floor
@@ -195,7 +193,7 @@ pubic static int search(int[] A, int k, int low, int high) {
 \textbf{All - O(n!)}\\
 Head recursion to the end so the last few numbers will be a permutation. Tail recursion to reset it to the last state.
 \begin{lstlisting}[language=java]
-public static void permute(int[] A, int low, int high) {
+void permute(int[] A, int low, int high) {
     if (low == high) {
         permutations.add(Arrays.copyOf(A, A.length));
         return;
@@ -221,25 +219,24 @@ Next permutation: TODO
 \end{itemize}
 \begin{lstlisting}[language=java]
     class Dictionary {
-        List<List<Pair>> dictionary;
+        List<List<Pair>> d = new ArrayList<>();
         int capacity;
-        public int hash(int key) { return Math.abs(key) % capacity; }
-        public Dictionary(int capacity) {
+        int hash(int key) { return Math.abs(key) % capacity; }
+        Dictionary(int capacity) {
             this.capacity = capacity;
-            this.dictionary = new ArrayList<>(capacity);
-            for (int i=0; i < capacity; i++) dictionary.add(new ArrayList<Pair>());
+            for (int i=0; i < capacity; i++) d.add(new ArrayList<Pair>());
         }
-        public void put(int key, String value) {
-            for (Pair p : dictionary.get(hash(key))) {
+        void put(int key, String value) {
+            for (Pair p : d.get(hash(key))) {
                 if (p.key == key) {
                     p.value = value;
                     return;
                 }
             }
-            dictionary.get(hash(key)).add(new Pair(key, value));
+            d.get(hash(key)).add(new Pair(key, value));
         }
-        public String get(int key) {
-            for (Pair p : dictionary.get(hash(key))) {
+        String get(int key) {
+            for (Pair p : d.get(hash(key))) {
                 if (p.key == key)
                     return p.value;
             }
@@ -248,8 +245,10 @@ Next permutation: TODO
     }
 \end{lstlisting}
 
+\begin{comment}
 \subsubsection{Static}
 If you know the keys ahead of time, use primary hash function to find out where they go to, then build secondary perfect hash functions. This will be $O(1)$ worst case and $O(n)$ space, since you know ahead of time how large to make your secondary arrays.
+\end{comment}
 
 \subsection{Coding}
 \subsubsection{Java}
@@ -263,6 +262,7 @@ If you know the keys ahead of time, use primary hash function to find out where 
     collection.stream()
         .map(lambda) //1:1
         .flatMap(lambda) //1:*
+        .forEach()
         .sorted()
         .distinct()
         .filter(lambda).
@@ -280,8 +280,21 @@ If you know the keys ahead of time, use primary hash function to find out where 
 \end{itemize}
 
 \subsubsection{OOP}
-https://www.oodesign.com/
 \begin{itemize}
+    \item Extending a base class or abstract class, or implementing an interface.
+    \item Encapsulation\\
+    \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+         & class & package & subclass & subclass & world \\
+         & & & same pkg & diff pkg &\\
+         \hline
+        public & Y & Y & Y & Y & Y\\
+        protected & Y & Y & Y & Y & \\
+        none (pkg-private) & Y & Y & Y & & \\
+        private & Y & & & &\\
+        \hline
+    \end{tabular}
+    \item Polymorphism - method overloading, method overriding
     \item Singleton - only one instance created, global access point.
 \begin{lstlisting}[language=java]
 class Singleton {
@@ -303,6 +316,8 @@ class Factory {
 }
 // Usage: FactoryItem item = Factory.buildItem(Item1");
 \end{lstlisting}
+
+\begin{comment}
     \item Builder - method chaining makes it easier to set multiple fields.
 \begin{lstlisting}[language=java]
 public class Item {
@@ -323,7 +338,6 @@ public class Item {
 // Usage: Item.Builder.newInstance().setField1(1)./*...*/.build();
 \end{lstlisting}
 
-\begin{comment}
     \item Prototype
 \begin{lstlisting}[language=java]
 abstract class Item implements Cloneable {
@@ -347,7 +361,6 @@ class ItemStore {
     }
 }
 \end{lstlisting}
-\end{comment}
     \item Adapter
 \begin{lstlisting}[language=java]
 interface Male { abstract void beingDumb(); }
@@ -399,36 +412,28 @@ class Me implements Visitor {/*...*/}
 // Usage: Make an collection of Friends, and Me
 //  for (Friend f : friends) friend.sleepover(me);
 \end{lstlisting}
+\end{comment}
 \end{itemize}
-
-
-\subsubsection{Testing and edge cases}
 
 \subsection{Algorithms}
 \begin{itemize}
-    \item Bottom up
-    \item Top down
-    \item Analyze complexity, how to improve
+    \item Bottom up vs top down
+    \item Analyze complexity (Master's, induction), how to improve
     \item Divide and conquer
     \item Dynamic programming
     \item Memoization
     \item Greedy
-    \item Recursion
-    \item Data structure specific
 \end{itemize}
 
 \subsection{Data Structures}
 \subsubsection{Collections}
 \begin{itemize}
-    \item Collections.size(); [].length, String.length();
+    \item c.size(); [].length, String.length();
     \item Collections.binarySearch(List l, K k);
     \item Collections.fill(List l, V v);
-    \item Collections.max(Collection c);
-    \item Collections.min(Collection c);
+    \item Collections.max/min(Collection c);
     \item Collections.replaceAll(List l, K old, K new);
-    \item Collections.reverse(List l);
-    \item Collections.shuffle(List l);
-    \item Collections.sort(List l);
+    \item Collections.sort/reverse/shuffle(List l);
     \item Collections.swap(List l, int i, int j);
 \end{itemize}
 \subsubsection{Strings}
@@ -437,8 +442,7 @@ class Me implements Visitor {/*...*/}
     \item Integer.valueOf(String s);
     \item String.valueOf(K k);
     \item s.charAt(int i);
-    \item s.substring(int start, int end);
-    \item s.substring(int start);
+    \item s.substring(int start, [int end]);
     \item s.replace(char src, char dst);
     \item s.indexOf(char c);
     \item s.matches(String regex);
@@ -450,6 +454,9 @@ new ArrayList(); or new LinkedList(); or new T[]; or {}; or Arrays.asList(,,); o
 \begin{itemize}
     \item Arrays.toString(T[]);
     \item System.arrayCopy(T[] src, int srcStart, T[] dst, int dstStart, int length);
+    \item a.get(int i); a.set(int i, T t);
+    \item a.add(T t); a.addAll(List l); a.remove(int i);
+    \item a.contains(T t); a.indexOf(T t);
 \end{itemize}
 \subsubsection{Stacks/queues/priority queue/heap}
 new Deque(); or new PriorityQueue();
@@ -458,40 +465,33 @@ X can be First or Last.
     \item dq.offerX(T t) (push)
     \item dq.peekX() (get)
     \item dq.pollX() (pop)
-    \item dq.size()
 \end{itemize}
 \subsubsection{HashSet/HashMap}
 new HashMap(); or new LinkedHashMap();
 \begin{itemize}
-    \item map.containsKey(K k);
-    \item map.containsValue(V v);
-    \item Map.Entry entry : map.entrySet();
-    \item map.keySet(); and map.values();
-    \item map.get(K k); and map.put(K k, V v);
-    \item map.remove(K k);
-\end{itemize}
-new TreeMap(); (A red black tree, so longer get, but has ordered keys)
-\begin{itemize}
-    \item same as above
-    \item ceilingEntry(K k); or floorEntry(K k); (includes equal to)
-    \item higherEntry(K k); or lowerEntry(K k); (doesn't include equal to)
-    \item headMap(K k, B b); or tailMap(K k, B b); or subMap(K k1, B b1, K k2, B b2); (B for inclusivity)
+    \item m.containsKey(K k); m.containsValue(V v);
+    \item Map.Entry entry : m.entrySet();
+    \item m.keySet(); and m.values();
+    \item m.get(K k); and map.put(K k, V v);
+    \item m.remove(K k);
 \end{itemize}
 new HashSet();
 \begin{itemize}
-    \item add(K k);
-    \item contains(K k);
-    \item remove(K k);
-    \item toArray();
+    \item s.add(K k); s.remove(K k);
+    \item s.contains(K k);
+    \item s.toArray(); new ArrayList(s);
 \end{itemize}
-new TreeSet();
+\subsection{TreeSet/TreeMap}
+Red black tree, longer get, but ordered keys. Same operations as above, plus some\\
+new TreeMap(); // Replace E with Entry, D with Map\\
+new TreeSet(); // Remove E, D with Set
 \begin{itemize}
-    \item similar to TreeMap
-    \item first(); last(); floor(); ceiling(); higher(); lower();
-    \item headSet(K k, B b); subSet(K k1, B b1, K k2, B b2); tailSet(K k, B b);
+    \item m.firstE/lastE(K k);
+    \item m.ceilingE/floorE(K k); // includes equal to
+    \item m.higherE/lowerE(K k); // doesn't include equal to
+    \item m.headD/tailD(K k, B b); or subD(K k1, B b1, K k2, B b2); (inclusive)
 \end{itemize}
-\subsubsection{Trees/Binary tree/Graphs}
-See below
+
 \subsubsection{Disjoint set}
 Can easily create a mapping from an object to a value, but for simplicity just use index in range as the data.
 \begin{lstlisting}[language=java]
@@ -530,19 +530,17 @@ class UnionFind {
 \subsection{Mathematics}
 \subsubsection{Counting}
 \begin{itemize}
-    \item Ordered list without replacement - $n!/(n-k)!$
+    \item Ordered list without replacement - $\frac{n!}{(n-k)!}$
     \item Ordered list with replacement - $n^k$
-    \item Subset without replacement - $\binom{n}{k} = n!/(k!(n-k)!)$
+    \item Subset without replacement - $\binom{n}{k} = \frac{n!}{k!(n-k)!}$
 \end{itemize}
 \subsubsection{Probability}
 
 \subsection{Trees and Graphs}
-\begin{itemize}
-    \item Binary tree
+\subsubsection{Binary tree}
 \begin{lstlisting}[language=java]
 class Node {
-    int val;
-    Node left, right;
+    int val; Node left, right;
     BinaryNode(int val) { this.val = val; }
     static void traverse(Node root) {
         //Preorder
@@ -553,11 +551,15 @@ class Node {
     }
 }
 \end{lstlisting}
-    \item N-ary tree - Use array instead of left and right from above, or use an adjacency list graph.
-    \item Trie tree
-    \item Balanced BST
-    \item Graph using objects - annoying, not that interesting.
-    \item Graph using adjacency list
+\subsubsection{N-nary tree}
+Use array instead of left and right from above, or use an adjacency list graph.
+\subsubsection{Trie tree}
+TODO
+\subsubsection{Balanced BST}
+Find the place to insert, then insert as a leaf, as black if RB. Then, rotate up to fix AVL properties (height of subsequent nodes differ by at most 1) or to fix RB properties (black root, no subsequent red nodes, all paths contain same number of black nodes). Rotations: single rotate pushes the largest element down so that the center item is promoted, and double rotate first rotates the bottom two to get the center node in the middle, and then single rotates. Annoying, not that interesting to implement.
+\subsubsection{Graph using objects}
+Annoying, not that interesting to implement.
+\subsubsection{Graph using adjacency list}
 \begin{lstlisting}[language=java]
 class Vertex {
     String key, value;
@@ -581,7 +583,7 @@ class Graph {
     
 }
 \end{lstlisting}
-    \item Graph using matrix
+\subsubsection{Graph using matrix}
 \begin{lstlisting}[language=java]
 class Graph {
     List<List<int>> g;
@@ -600,27 +602,62 @@ class Graph {
     }
 }
 \end{lstlisting}
-    \item BFS
-    \item DFS
-    \item Preorder, inorder, postorder
+\subsubsection{BFS, DFS, Topological Sort}
+\begin{itemize}
+    \item BFS uses queue, while DFS uses stack. Function calls are on a stack, so no other data structures needed.
+    \item For topological sorting, intuition is that it is ordered by decreasing finishing time for DFS, so add a node that connects to all nodes without incoming edges. Then, run dfs on it, with tail call to add it to array.
 \end{itemize}
-Djikstra
-Bellman Ford
-Strongly connected components
-Topological sort
-MST
+\begin{lstlisting}[language=java]
+// Assume vertex passed in is already marked as visited.
+// Assume that the node passed in can reach every node.
+// If not, keep searching unvisited nodes.
+Deque<Vertex> dq = new ArrayDeque<>();
+List<Vertex> sorted = new ArrayLost<>();
+void bfs/dfs(Vertex v) {
+    // Process node
+    for (Vertex dst : g.get(v)) {
+        if (!dst.val.equals("visited") {
+            dq.offerLast(dst);
+            dst.val = "visited";
+        }
+    }
+    if (dq.size() != 0)
+        bfs(dq.pollFirst()); // dfs(dq.pollLast());
+}
+void dfs(Vertex v) {
+    // Process node.
+    g.get(v).stream()
+        .filter(x -> !x.val.equals("visited"))
+        .map(x -> { x.val = "visited"; return x; }
+        .forEach(x -> dfs(x));
+    //topoSort.add(v);
+}
+\end{lstlisting}
+\subsection{Strongly Connected Components}
+Conceptually, two DFS modified to highlight edges that find decreasing last visit time between the nodes, one on the graph and one on the transpose; if highlighted in both runs, SCC. Implementation: DFS with tail call push onto stack (like topological sort, ordering by decreasing last visit time). Reverse directions of edges on graph. While stack is not empty, pop nodes and DFS on unvisited ones to get a single SCC. 
+\subsection{Minimum Spanning Tree}
+\begin{itemize}
+    \item Kruskal's: Store edges weights in a minheap (like sorting the edges). Create disjoint set for nodes. For each minimum edge, if the two vertices are in different trees, union the nodes and add the edge.
+    \item Prim's: Create disjoint set for nodes. While there are isolated nodes, iterate through set to get the minimum edge to something we have not visited yet.
+\end{itemize}
+\subsection{Paths}
+\begin{itemize}
+    \item Djikstra
+    \item Bellman Ford/Floyd Warshall
+    \item Matrix multiplication
+\end{itemize}
 
-\subsection{Recursion}
+
+\subsection{Recursion, Divide and Conquer}
 
 \subsection{Operating Systems}
 \begin{itemize}
     \item Processes - separate address space, more costly to create
     \item Threads - share address space and resources in a process
     \item Concurrency issues - safety refers to never being in deadlock, liveness refers to stop waiting after a certain time.
-    \item Locks - limits to one thread in a process - lock.acquire(), lock.wait(), lock.release()
-    \item Mutexes - limits to one thread in any process - 
+    \item Locks/Mutex - limits to one thread in a process (binary semaphore) - lock.acquire(), lock.wait(), lock.release()
     \item Semaphores - limits number of processes - semaphore(n), s.up(), s.down()
-    \item Monitors - avoid busy waiting by acquiring lock and then releasing it, and getting put on the semaphore queue. Then, when a process is done, it can either signal one or all that the resource is free.
+    \item Monitors/Condition variable - avoid busy waiting by acquiring lock and then releasing it, and getting put on the semaphore queue. Then, when a process is done, it can either signal one or all that the resource is free.
     \item Deadlock - processes waiting for each other. Two people playing tug of war and neither wants to let go. Think of true/false as the lock acquire/release.
     \begin{lstlisting}[language=c]
 /* PROCESS 0 */
@@ -653,7 +690,7 @@ while (a) { // gets stuck in this loop
 }
 b = false;
 \end{lstlisting}
-    \item Context switching - switching between processes
+    \item Context switching - switching between threads or processes
     \item Scheduling
     \begin{itemize}
         \item First come first serve - simple and no starvation, but no preemption, so average wait time is long if a process takes a long time.
@@ -663,16 +700,16 @@ b = false;
         \item Multi-level feedback queue - similar to priority scheduling, but increase or decrease priority (move to different queue) if starving or hogging.
         \item Round robin - simple, unfair to maringally longer jobs.
         \item Dominant resource fairness - some tasks might be focused on one resource
-        \item Hadoop does FIFO, fair, and capacity scheduling.
-        \item Mesos resource offers.
+        %\item Hadoop does FIFO, fair, and capacity scheduling.
+        %\item Mesos resource offers.
     \end{itemize}
 \end{itemize}
 
-\subsection{System Design}
+\subsection{System Design, Testing and edge cases}
 \begin{itemize}
     \item Breaking down a problem into subproblems
-    \item Engineering tradeoffs
-    \item Time and memory
+    \item Clarify types of valid/invalid input, input size
+    \item Engineering tradeoffs, e.g. time and memory, complexity of solution might be harder to modify
     \item CAP theorem - in distributed systems, the tradeoff between:
     \begin{itemize}
         \item consistency - most recent data or error
