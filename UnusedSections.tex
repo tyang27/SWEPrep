@@ -1,0 +1,153 @@
+\begin{comment}
+\subsubsection{Java}
+\begin{itemize}
+    \itemsep0em
+    \item Lambdas:
+    \begin{lstlisting}[language=java]
+    (T1 t1, ...) -> { t1...};
+    \end{lstlisting}
+    \item Streams:
+    \begin{lstlisting}[language=java]
+    collection.stream()
+        .map(lambda) //1:1
+        .flatMap(lambda) //1:*
+        .forEach()
+        .sorted()
+        .distinct()
+        .filter(lambda).
+        .concat(stream)
+        .limit(int)
+        .toArray()/.collect(Collectors.toList());
+    \end{lstlisting}
+\end{itemize}
+
+\subsubsection{REST APIs}
+\begin{itemize}
+    \itemsep0em
+    \item No saved state e.g. with HTTP
+    \item Everything is in the query which is good for scalability and indepenent growth of client server
+    \item GET, POST, PUT, DELETE
+\end{itemize}
+\end{comment}
+
+
+
+
+
+\begin{comment}
+    \item Singleton - only one instance created, global access point.
+\begin{lstlisting}[language=java]
+class Singleton {
+    private static Singleton instance = new Singleton();
+    private Singleton() {}
+    public static Singleton getInstance() { return instance; }
+}
+// Usage: Singleton.getInstance();
+\end{lstlisting}
+    \item Factory - produce items that implement the same interface.
+\begin{lstlisting}[language=java]
+interface FactoryItem { }
+class Item1 implements FactoryItem { }
+class Factory {
+    static FactoryItem buildItem(String type) {
+        if (type.equalsIgnoreCase("Item1")) { return new Item1(); }
+        return null;
+    }
+}
+// Usage: FactoryItem item = Factory.buildItem(Item1");
+\end{lstlisting}
+    \item Builder - method chaining makes it easier to set multiple fields.
+\begin{lstlisting}[language=java]
+public class Item {
+    private final int field1;
+    private Item() {}
+    Item(Builder builder) { field1 = builder.field1; }
+    static class Builder {
+        private int field1;
+        private Builder();
+        static Builder newInstance() { return new Builder(); }
+        Builder setField1(int field1) {
+            this.field1 = field1;
+            return this;
+        }
+        Item build() { return new Item(this); }
+    }
+}
+// Usage: Item.Builder.newInstance().setField1(1)./*...*/.build();
+\end{lstlisting}
+
+    \item Prototype
+\begin{lstlisting}[language=java]
+abstract class Item implements Cloneable {
+    protected String itemName;
+    abstract void addItem();
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupporteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}
+class Item1 extends Item {/*...*/}
+class ItemStore {
+    Map<String, Item> protoMap = new HashMap<>();
+    static { protoMap.put("Item1", new Item1()); }
+    public static Prototype getItem(String item) {
+        return (Item) protoMap.get(item).clone();
+    }
+}
+\end{lstlisting}
+    \item Adapter
+\begin{lstlisting}[language=java]
+interface Male { abstract void beingDumb(); }
+interface Female { abstract void beingSmart(); }
+class male1 implements Male {}
+class female1 implements Female {}
+class Adapter {
+    Male m;
+    Adapter(Male male) { this.m = m; }
+    public void beingSmart() { m.beingDumb(); }
+}
+// Usage: Adapter(new Male()).beingSmart(); --> new Female().beingSmart();
+\end{lstlisting}
+    \item State - uses polymorphism to change the behavior of the object.
+\begin{lstlisting}[language=java]
+interface State { public void fx(Context ctxt); }
+class State1 implements State {/*...*/}
+class Context {
+    private State currentState;
+    Context() { currentState = new State1(); }
+    void setState(State state) { currentState = state; }
+    void fx() { currentState.fx(this); }
+}
+// Usage: Context c = new Context(); c.setState(new State2()); c.fx();
+\end{lstlisting}
+    %\item Strategy
+    \item Observer
+\begin{lstlisting}[language=java]
+class Display {
+    private int field1;
+    void update(int field1) { field1 = field1; display(); }
+    void display() {/*...*/}
+}
+class Data {
+    Display display;
+    private int field1;
+    Data(Display display) { display = display; }
+    void updateField1() {/*...*/}
+    void dataChanged() { display.update(field1); }
+}
+\end{lstlisting}
+    \item Visitor
+\begin{lstlisting}[language=java]
+interface Visitor { void visit(Boyfriend bf); void visit(Bestfriend f); }
+interface Friend { void sleepover(Visitor visitor); }
+class Boyfriend implements Friend {/*...*/}
+class Bestfriend implements Friend {/*...*/}
+class Me implements Visitor {/*...*/}
+// Usage: Make an collection of Friends, and Me
+//  for (Friend f : friends) friend.sleepover(me);
+\end{lstlisting}
+\end{comment}
