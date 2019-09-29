@@ -1,0 +1,42 @@
+\subsection{Operating Systems}
+\begin{itemize}
+    \itemsep0em
+    %\item Processes - separate address space, more costly to create
+    %\item Threads - share address space and resources in a process
+    \item Concurrency issues - safety refers to never being in deadlock, liveness refers to stop waiting after a certain time.
+    \item Locks/Mutex - limits to one thread in a process (binary semaphore) - lock.acquire(), lock.wait(), lock.release()
+    \item Semaphores - limits number of processes - semaphore(n), s.up(), s.down()
+    \item Monitors/Condition variable - avoid busy waiting by acquiring lock and then releasing it, and getting put on the semaphore queue. Then, when a process is done, it can either signal one or all that the resource is free.
+    \item Deadlock - processes waiting for each other. Two people playing tug of war and neither wants to let go. Think of true/false as the lock acquire/release.
+    \begin{lstlisting}[language=c]
+/* PROCESS 0 */
+a = true; while (b); a = false; 
+
+/* PROCESS 1 */
+b = true; while (a); b = false;
+    \end{lstlisting}
+    \item Livelock - processes keep responding to each other and neither gets anything done. Two people who keep telling each other ``you first, I'll wait".
+\begin{lstlisting}[language=c]
+/* PROCESS 0 */
+a = true; 
+while (b) { a = false; /* delay. */ a = true; }
+a = false; 
+
+/* PROCESS 1 */
+b = true;
+while (a) { b = false; /* delay. */ b = true; }
+b = false;
+\end{lstlisting}
+%    \item Context switching - switching between threads or processes
+    \item Scheduling
+    \begin{itemize}
+        \item First come first serve - simple and no starvation, but no preemption, so average wait time is long if a process takes a long time.
+        \item Shortest job first - high throughput, but unknown job times and may starve long jobs.
+        \item Round robin - no starvation, but have to tune quantum length (too long without preemption isn't good, too short makes it inefficient)
+        \item Priority - can be flexible based on resources, but requires a separate algorithm for ties, and may starve low priority.
+        %\item Multi-level feedback queue - similar to priority scheduling, but increase or decrease priority (move to different queue) if starving or hogging.
+        %\item Dominant resource fairness - some tasks might be focused on one resource
+        %\item Hadoop does FIFO, fair, and capacity scheduling.
+        %\item Mesos resource offers.
+    \end{itemize}
+\end{itemize}

@@ -1,0 +1,71 @@
+\subsection{Data Structure Documentation}
+\subsubsection{Collections}
+\begin{itemize}
+    \itemsep0em
+    \item c.size(); [].length, String.length();
+    \item Collections.binarySearch(List l, K k);
+    \item Collections.max/min(Collection c);
+    \item Collections.replaceAll(List l, K old, K new);
+    \item Collections.sort/reverse/shuffle(List l);
+    \item Collections.swap(List l, int i, int j);
+\end{itemize}
+\subsubsection{Strings}
+``initialization"
+\begin{itemize}
+    \itemsep0em
+    %\item Integer.valueOf(String s);
+    %\item String.valueOf(K k);
+    \item s.charAt(int i); s.toCharArray();
+    \item string s.substring(int start, [int end]);
+    %\item s.replace(char src, char dst);
+    %\item s.indexOf(char c);
+    \item bool s.matches(String regex);
+    %\item s.split(String regex);
+    \item bool s.startsWith(String pre); s.endsWith(String suf);
+\end{itemize}
+\subsubsection{Arrays/linked lists}
+new ArrayList(); or new LinkedList(); or new T[]; or {}; or Arrays.asList(,,); or Arrays.asList(t1, ...)
+\begin{itemize}
+    \itemsep0em
+    \item Arrays.toString(T[]);
+    \item System.arrayCopy(T[] src, int srcStart, T[] dst, int dstStart, int length);
+    \item a.get(int i); a.set(int i, T t); a.remove(int i);
+    \item a.add(T t); a.addAll(List l);
+    \item a.contains(T t); a.indexOf(T t);
+\end{itemize}
+\subsubsection{Stacks/queues/priority queue/heap}
+new Deque(); or new PriorityQueue();
+X can be First or Last.
+\begin{itemize}
+    \itemsep0em
+    \item dq.offerX(T t) (push)
+    \item dq.peekX() (get)
+    \item dq.pollX() (pop)
+\end{itemize}
+\subsubsection{HashSet/HashMap}
+new HashMap(); or new LinkedHashMap();
+\begin{itemize}
+    \itemsep0em
+    \item m.containsKey(K k); m.containsValue(V v);
+    \item Map.Entry entry : m.entrySet();
+    \item m.keySet(); and m.values();
+    \item m.get(K k); and map.put(K k, V v); m.remove(K k);
+\end{itemize}
+new HashSet();
+\begin{itemize}
+    \itemsep0em
+    \item s.add(K k); s.remove(K k);
+    \item s.contains(K k);
+    \item s.toArray(); new ArrayList(s);
+\end{itemize}
+\subsection{TreeSet/TreeMap}
+Red black tree, longer get, but ordered keys. Same operations as above, plus some\\
+new TreeMap(); // Replace E with Entry, D with Map\\
+new TreeSet(); // Remove E, D with Set
+\begin{itemize}
+    \itemsep0em
+    \item m.firstE/lastE(K k);
+    \item m.ceilingE/floorE(K k); // includes equal to
+    \item m.higherE/lowerE(K k); // doesn't include equal to
+    \item m.headD/tailD(K k, B b); or subD(K k1, B b1, K k2, B b2); (inclusive)
+\end{itemize}

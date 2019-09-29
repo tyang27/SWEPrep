@@ -1,0 +1,176 @@
+
+\subsection{Sorting and searching}
+
+\subsubsection{Binary search - $O(\log n)$}
+\textbf{Recursive}:
+\begin{lstlisting}[language=java]
+int search(int[] A, int key, int low, int high) {
+    if (high < low) {
+        // return low; // ceiling
+        // return high; // floor
+        return -1;
+    }
+    int mid = low + (high-low)/2;
+    if (A[mid] == key) return mid;
+    else if (A[mid] > key) return search(A, key, low, mid-1);
+    else return search(A, key, mid+1, high);
+}
+\end{lstlisting}
+\textbf{Iterative}:
+\begin{lstlisting}[language=java]
+int search(int[] A, int key) {
+    int low = 0; int high = A.length-1;
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (A[mid] == key) return mid;
+        if (key < A[mid]) high = mid-1;
+        if (key > A[mid]) low = mid+1;
+    }
+    return -1;
+}
+\end{lstlisting}{}
+
+\subsubsection{Merge sort - $O(n\log n)$}
+Partition into smaller and smaller arrays, then merge to sort.
+\begin{lstlisting}[language=java]
+void sort(int[] A) {
+    if (A.length <= 1) return;
+    
+    int mid = A.length/2;
+    int[] left = new int[mid];
+    int[] right = new int[A.length-mid];
+    
+    System.arraycopy(A, 0, left, 0, mid);
+    System.arraycopy(A, mid, right, 0, A.length-mid);
+    sort(left); sort(right); merge(A, left, right);
+}
+void merge(int[] A, int[] left, int[] right) {
+    int l, r, i; l = r = i = 0;
+    while (l < left.length || r < right.length) {
+        if (l < left.length && r < r.length)
+            A[i++] = compare(left[l], right[r]) ? right[r++] : left[l++];
+        else if (l < left.length)
+            A[i++] = left[l++];
+        else if (r < right.length)
+            A[i++] = right[r++];
+    }    
+}
+\end{lstlisting}
+
+\subsubsection{Quick sort - $O(n^2)$ worst case, $O(n\log n)$ average case}
+%Partition into higher and lower group, then recursively sort.
+\begin{lstlisting}[language=java]
+void sort(int[] A, int low, int high) {
+    if (high < low) return;
+    int pivot = partition(A, low, high);
+    sort(A, low, pivot-1); sort(A, pivot+1, high);
+}
+int partition(int[] A, int low, int high) {
+    int insPt = low-1;
+    for (int curr = low; curr < high; curr++)
+        if (A[curr] <= A[high]) swap(A, ++insPt, curr);
+    swap(A, ++insPt, high);
+    return insPt;
+}
+\end{lstlisting}
+
+\begin{comment}
+\subsubsection{Count sort - $O(n+r)$}
+Count frequencies of each element, then unpack.
+\begin{lstlisting}[language=java]
+void sort(int[] A) {
+    if (A.length == 0) return;
+    int min = Arrays.stream(A).min().getAsInt();
+    int max = Arrays.stream(A).max().getAsInt();
+    int[] counts = new int[max-min+1];
+    for (int i : A) counts[i-min]++;
+    
+    int j = 0;
+    for (int i=0; i < A.length; i++) {
+        while (counts[j] == 0) j++;
+        A[i] = min + j;
+        counts[j]--;
+    }
+}
+\end{lstlisting}
+\end{comment}
+
+
+\subsubsection{Radix sort - $O(nk/d)$}
+\begin{lstlisting}[language=java]
+void sort(int[] A) {                                  
+    for (int i = 0; i < MAX_LEN; i++) {
+        List<List<Integer>> B = new ArrayList<>(BUCKETS);                  
+        for (int b = 0; b < BUCKETS; b++) B.add(new ArrayList<>());
+        for (int a : A) B.get(placeValue(a, i)).add(a);
+        for (int b = 0, unpacker = 0; b < BUCKETS; k++)
+            for (int a : B.get(b))
+                A[unpacker++] = a;                           
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Median/order stats}
+\textbf{Median of medians - $O(n)$ worst and best case}\\
+\textbf{Quick select - $O(n^2)$ worst case but $O(n)$ average}\\
+Partition, then recurse based on the size of partition created by pivot.
+\begin{lstlisting}[language=java]
+public static int search(int[] A, int k, int low, int high) {
+    if (high == low) return A[low];
+    int pivot = partition(A, low, high);
+    if (k < pivot) return search(A, k, low, pivot-1);
+    else if (k > pivot) return search(A, k, pivot+1, high);
+    else return A[pivot];
+}
+\end{lstlisting}
+
+
+
+
+
+
+
+\begin{comment}
+\subsubsection{Insertion sort - $O(n^2)$}
+Preserves loop invariant by inserting next element right of cursor into invariant.
+\begin{itemize}
+    \itemsep0em 
+    \item Adaptive - good for mostly sorted data sets.
+    \item Stable - preserves order of equal items.
+    \item In-place - no auxillary data structures.
+    \item Online - does not need whole input to start sorting.
+    \item Insertion finding step can be sped up with binary search.
+\end{itemize}
+\begin{lstlisting}[language=java]
+void sort(int[] A) {
+    for (int cursor=1; cursor < A.length; cursor++) {
+        int cursorVal = A[cursor];
+        int left = cursor - 1;
+        while (left >= 0 && A[left] > cursorVal) {
+            A[left+1] = A[left];
+            left--;
+        }
+        A[left+1] = cursorVal;
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Selection sort - $O(n^2)$}
+Preserves loop invariant by putting the next largest element right of cursor as next element of invariant.   
+\begin{lstlisting}[language=java]
+sort(int[] A) {
+    for (int cursor=0; cursor < A.length-1; cursor++) {
+        int minIndex = cursor;
+        for (int right = cursor+1; right < A.length; right++) {
+            if (compare(A[minIndex], A[right])
+                minIndex = right;
+        }
+        if (minIndex != cursor)
+            swap(A, cursor, minIndex);
+    }
+}
+\end{lstlisting}
+
+\subsubsection{Bubble sort}
+Not very good or interesting...
+\end{comment}
